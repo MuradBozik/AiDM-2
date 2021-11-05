@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.DS_Store
+.idea/
+Assignment_2.pdf
+data/
+0.ipynb
