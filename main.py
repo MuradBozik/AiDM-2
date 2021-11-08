@@ -1,7 +1,8 @@
 import argparse
 import warnings
 import numpy as np
-
+import pandas as pd
+from scipy.sparse import csr_matrix
 
 def parse_args():
     # Parse command line arguments
@@ -16,8 +17,41 @@ def parse_args():
     return ap.parse_args()
 
 
+class LSH:
+    def __init__(self, k, m):
+        self.hash_functions = self.create_hash_functions(k/m)
+
+    def create_hash_functions(self, num):
+        hs = []
+        for i in range(num):
+            mask = np.random.randint(2 ** 32)
+            hs.append(lambda x: hash(x) ^ mask)
+        return hs
+
+
+
+
+
+
 def main(args):
-    pass
+    np.random.seed(args.s)
+
+    # We are creating a movies-users matrix
+    data = np.load("data/user_movie_rating.npy")
+    data = data[:, [1, 0, 2]]
+    data = data[np.argsort(data[:, 0])]
+
+    cols = ["movie_id", "user_id", "rating"]
+    df = pd.DataFrame(data, columns=cols)
+    df = df.pivot(index="movie_id", columns="user_id", values="rating")
+
+    S = csr_matrix(df.to_numpy())
+
+
+
+
+
+
 
 
 
