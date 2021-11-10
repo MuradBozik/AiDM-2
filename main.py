@@ -18,17 +18,20 @@ def parse_args():
 
 
 class LSH:
-    def __init__(self, k, m):
-        self.hash_functions = self.create_hash_functions(k/m)
+    def __init__(self, args, k, S, measure):
+        self.args = args
+        self.k = k # random permutation numbers == row number of signature matrix M
+        self.S = S # input matrix
+        self.M = self.create_signature_matrix(k ,S)
 
-    def create_hash_functions(self, num):
-        hs = []
-        for i in range(num):
-            mask = np.random.randint(2 ** 32)
-            hs.append(lambda x: hash(x) ^ mask)
-        return hs
+    def create_signature_matrix(self, k , S):
+        M = np.zeros((k, S.shape[1]))
+        for i in range(k):
+            rxs = np.random.permutation(S.shape[0])
+            M[i,:] = (S[rxs,:] != 0).argmax(axis=0)
+        return M
 
-
+    
 
 
 
@@ -44,8 +47,14 @@ def main(args):
     cols = ["movie_id", "user_id", "rating"]
     df = pd.DataFrame(data, columns=cols)
     df = df.pivot(index="movie_id", columns="user_id", values="rating")
-
+    df = df.fillna(0)
     S = csr_matrix(df.to_numpy())
+
+
+
+
+
+
 
 
 
