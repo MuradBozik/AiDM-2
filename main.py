@@ -18,11 +18,13 @@ def parse_args():
 
 
 class LSH:
-    def __init__(self, args, k, S, measure):
+    def __init__(self, args, S, h, r, b):
         self.args = args
-        self.k = k # random permutation numbers == row number of signature matrix M
+        self.h = h # signature length
+        self.r = r # number of rows in one band
+        self.b = b # number of bands
         self.S = S # input matrix
-        self.M = self.create_signature_matrix(k ,S)
+        self.M = self.create_signature_matrix(h,S)
 
     def create_signature_matrix(self, k , S):
         M = np.zeros((k, S.shape[1]))
@@ -31,7 +33,20 @@ class LSH:
             M[i,:] = (S[rxs,:] != 0).argmax(axis=0)
         return M
 
+    def select_bands(self):
+        total_bands = self.M.shape[0]//self.r
+        selected_bands = np.random.choice(total_bands, self.b, replace=False)
+        selected_bands.sort()
+        return selected_bands
+
+    def get_hash_func(self, bucket_num):
+        a = np.random.randint(1, 10**6, size=self.r)
+        b = np.random.randint(1, 10**6)
+        return lambda x: (np.dot(a, x) + b) % bucket_num
+
     
+
+
 
 
 
