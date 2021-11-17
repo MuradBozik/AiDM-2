@@ -132,4 +132,4 @@ dmypy.json
 .idea/
 Assignment_2.pdf
 data/
-0.ipynb
+*.ipynb
