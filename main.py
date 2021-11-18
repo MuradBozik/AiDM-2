@@ -1,6 +1,7 @@
 import argparse
 import warnings
 import numpy as np
+import tracemalloc
 import pandas as pd
 from datetime import datetime
 from itertools import combinations
@@ -136,9 +137,15 @@ def main(args):
 if __name__ == "__main__":
     # ignores all warnings
     warnings.filterwarnings("ignore")
-
     args = parse_args()
+
+    tracemalloc.start()
     t0 = datetime.now()
+
     main(args)
+
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"Peak memory usage was {round(peak / 10 ** 9, 2)}GB")
+    tracemalloc.stop()
     t1 = datetime.now()
     print(f"Total Time: {str(t1 - t0)}")
