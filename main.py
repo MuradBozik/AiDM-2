@@ -72,12 +72,15 @@ def c_sim(u1, u2):
 
 def check_candidates(buckets, M, callback, threshold):
     ps = set()
+    ds = set()
     for key, val in buckets.items():
         c_pairs = combinations(val, 2)
         for p in c_pairs:
             if callback(M[:, p[0]], M[:, p[1]]) > threshold:
                 ps.add(p)
-    return ps
+            else:
+                ds.add(p)
+    return ps, ds
 
 def write_down(pairs_set, measure="js"):
     pairs_list = list(pairs_set)
@@ -130,7 +133,11 @@ def main(args):
 
     filterBuckets(buckets, minVal=2)
 
-    similar_pairs = check_candidates(buckets, M, sim_func, threshold)
+    similar_pairs, dissimilar_pairs = check_candidates(buckets, M, sim_func, threshold)
+
+    print(f"Similar pairs: {len(similar_pairs)*100/(len(similar_pairs)+len(dissimilar_pairs))} %")
+    print(f"Dis-similar pairs: {len(dissimilar_pairs) * 100 / (len(similar_pairs) + len(dissimilar_pairs))} %")
+
     write_down(similar_pairs, args.measure)
 
 
@@ -139,13 +146,13 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     args = parse_args()
 
-    tracemalloc.start()
+    #tracemalloc.start()
     t0 = datetime.now()
 
     main(args)
 
-    current, peak = tracemalloc.get_traced_memory()
-    print(f"Peak memory usage was {round(peak / 10 ** 9, 2)}GB")
-    tracemalloc.stop()
+    #current, peak = tracemalloc.get_traced_memory()
+    #print(f"Peak memory usage was {round(peak / 10 ** 9, 2)}GB")
+    #tracemalloc.stop()
     t1 = datetime.now()
     print(f"Total Time: {str(t1 - t0)}")
